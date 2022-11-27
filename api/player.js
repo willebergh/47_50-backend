@@ -32,6 +32,8 @@ router.get("/event/:event_id", (req, res) => {
 				organisation: doc.organisation.displayName,
 				ticketPrice: doc.ticketPrice,
 				_id: doc._id,
+				hasStarted: doc.hasStarted,
+				hasEnded: doc.hasEnded,
 			};
 
 			res.status(200).json({ message: "success", event: newEventDoc });
@@ -70,27 +72,8 @@ router.post("/buy-tickets", (req, res) => {
 				return;
 			}
 
-			Player.model.findOne({ tel: playerTelNr }, (err, player_doc) => {
-				if (err) {
-					logger.err("API @ /player/buy-tickets", err);
-					res.status(500).json({ message: "internal-server-error" });
-					return;
-				}
-
-				var player_doc_var;
-				if (!player_doc) {
-					Player.model.create({ tel: playerTelNr }, (err, player_doc) => {
-						if (err) {
-							logger.err("API @ /player/buy-tickets", err);
-							res.status(500).json({ message: "internal-server-error" });
-							return;
-						}
-						player_doc_var = player_doc;
-					});
-				} else {
-					player_doc_var = player_doc;
-				}
-
+			var player_doc_var;
+			const next = () => {
 				const newTickets = [];
 
 				for (let x = 0; x < numberOfTickets; x++) {
@@ -104,7 +87,9 @@ router.post("/buy-tickets", (req, res) => {
 				Ticket.model.insertMany(newTickets, (err, ticket_docs) => {
 					if (err) {
 						logger.err("API @ /player/buy-tickets", err);
-						res.status(500).json({ message: "internal-server-error" });
+						res.status(500).json({
+							message: "internal-server-error",
+						});
 						return;
 					}
 
@@ -115,18 +100,54 @@ router.post("/buy-tickets", (req, res) => {
 
 					event_doc.stats = {
 						ticketsSold: event_doc.activeTickets.length,
-						grossIncome: event_doc.activeTickets.length * event_doc.ticketPrice,
+						grossIncome:
+							event_doc.activeTickets.length *
+							event_doc.ticketPrice,
 						pricePool:
-							(event_doc.activeTickets.length * event_doc.ticketPrice) / 2,
-						uniqePlayers: new Set(event_doc.activeTickets.map((x) => x.player))
-							.length,
+							(event_doc.activeTickets.length *
+								event_doc.ticketPrice) /
+							2,
+						uniqePlayers: new Set(
+							event_doc.activeTickets.map((x) => x.player)
+						).length,
 					};
 
 					event_doc.save();
 					player_doc_var.save();
 
-					res.status(200).json({ message: "success", tickets: ticket_docs });
+					res.status(200).json({
+						message: "success",
+						tickets: ticket_docs,
+					});
 				});
+			};
+
+			Player.model.findOne({ tel: playerTelNr }, (err, player_doc) => {
+				if (err) {
+					logger.err("API @ /player/buy-tickets", err);
+					res.status(500).json({ message: "internal-server-error" });
+					return;
+				}
+
+				if (!player_doc) {
+					Player.model.create(
+						{ tel: playerTelNr },
+						(err, player_doc) => {
+							if (err) {
+								logger.err("API @ /player/buy-tickets", err);
+								res.status(500).json({
+									message: "internal-server-error",
+								});
+								return;
+							}
+							player_doc_var = player_doc;
+							next();
+						}
+					);
+				} else {
+					player_doc_var = player_doc;
+					next();
+				}
 			});
 		});
 });
