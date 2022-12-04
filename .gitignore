@@ -4,3 +4,4 @@ ssl
 cert.pem
 csr.pem
 key.pem
+.DS_Store
