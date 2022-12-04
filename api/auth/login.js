@@ -11,10 +11,10 @@ router.post("/", (req, res) => {
 	const { email, password } = req.body;
 
 	User.model
-		.findOne()
+		.findOne({ email })
 		.select("+password")
 		.populate("organisations")
-		.exec({ email }, (err, doc) => {
+		.exec((err, doc) => {
 			if (err) {
 				logger.error("API @ /auth/login", err);
 				res.status(500).json({ message: "internal-server-error" });
@@ -32,7 +32,7 @@ router.post("/", (req, res) => {
 				}
 
 				// If the password don't match the hash it's the wrong password.
-				if (!isMatch) return res.status(401).json({ message: "unauthorized" });
+				if (!isMatch) return res.status(401).json({ message: "unauthorized 2" });
 
 				const user = {
 					_id: doc._id,
