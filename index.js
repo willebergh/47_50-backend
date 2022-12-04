@@ -27,7 +27,8 @@ app.use(
 );
 app.use("/api", api);
 
-app.listen(process.env.PORT | 5000, (e) => {
+const PORT = process.env.PORT | 5001;
+app.listen(PORT, (e) => {
 	if (e) return console.error(e);
-	console.log("Server online");
+	console.log(`Server has started on port ${PORT} online`);
 });
