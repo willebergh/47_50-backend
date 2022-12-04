@@ -6,12 +6,11 @@ const Ticket = require("../../models/Ticket");
 
 const router = express.Router();
 
-router.post("/", (req, res) => {
+router.get("/", (req, res) => {
 	const { event_id, playerTelefonNumber } = req.body;
 
-	
-
-	
+	console.log("Swish Success!");
+	console.log(req.body);
 });
 
 module.exports = router;
