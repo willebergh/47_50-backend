@@ -25,6 +25,12 @@ router.get("/event/:event_id", (req, res) => {
 				return;
 			}
 
+			if (!doc) {
+				logger.debug("API @ /player/event", "event finns inte");
+				res.status(400).json({ message: "event not found" });
+				return;
+			}
+
 			const newEventDoc = {
 				displayName: doc.displayName,
 				startDate: doc.startDate,
