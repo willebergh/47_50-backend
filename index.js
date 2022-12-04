@@ -4,6 +4,8 @@ const mongoose = require("mongoose");
 const express = require("express");
 const cookieSession = require("cookie-session");
 const api = require("./api/api");
+const https = require("https");
+const fs = require("fs");
 
 // Connect to database
 mongoose
@@ -28,7 +30,15 @@ app.use(
 app.use("/api", api);
 
 const PORT = process.env.PORT | 5001;
-app.listen(PORT, (e) => {
-	if (e) return console.error(e);
-	console.log(`Server has started on port ${PORT} online`);
-});
+https
+	.createServer(
+		{
+			key: fs.readFileSync("key.pem"),
+			cert: fs.readFileSync("cert.pem"),
+		},
+		app
+	)
+	.listen(PORT, (e) => {
+		if (e) return console.error(e);
+		console.log(`Server has started on port ${PORT} online`);
+	});
