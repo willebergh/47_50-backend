@@ -3,6 +3,7 @@ const logger = require("../utils/logger");
 const Event = require("../models/Event");
 const Player = require("../models/Player");
 const Ticket = require("../models/Ticket");
+const Swish = require("../utils/swish");
 
 const router = express.Router();
 
@@ -47,14 +48,14 @@ router.get("/event/:event_id", (req, res) => {
 });
 
 router.post("/buy-tickets", (req, res) => {
-	const { event_id, numberOfTickets, playerTelNr } = req.body;
+	const { event_id, numberOfTickets } = req.body;
 
-	if (!event_id || !playerTelNr || !numberOfTickets) {
+	if (!event_id || !numberOfTickets) {
 		logger.debug(
 			"API @ /player/buy-tickets",
 			"missing information in req.body"
 		);
-		res.status(400).json({ message: "no event_id or playerTelNr" });
+		res.status(400).json({ message: "no event_id or numberOfTickets" });
 		return;
 	}
 
@@ -67,6 +68,10 @@ router.post("/buy-tickets", (req, res) => {
 				logger.err("API @ /player/buy-tickets", err);
 				res.status(500).json({ message: "internal-server-error" });
 				return;
+			}
+
+			if (!event_doc) {
+				return res.status(400).json({ message: "event not found" });
 			}
 
 			if (!event_doc.hasStarted) {
@@ -120,11 +125,31 @@ router.post("/buy-tickets", (req, res) => {
 
 					event_doc.save();
 					player_doc_var.save();
+					const amount = numberOfTickets * event_doc.ticketPrice;
 
-					res.status(200).json({
-						message: "success",
-						tickets: ticket_docs,
-					});
+					Swish.createSwishRequest(
+						{
+							amount,
+							message: `Betala för ${numberOfTickets} st lotter`,
+						},
+						(err, paymentToken) => {
+							if (err) {
+								logger.error(
+									"API @ /api/player/buy-tickets",
+									err
+								);
+								res.status(500).json({
+									message: "internal-server-error",
+								});
+								return;
+							}
+
+							res.status(200).json({
+								message: "success",
+								paymentToken,
+							});
+						}
+					);
 				});
 			};
 
