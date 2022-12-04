@@ -1,2 +1,6 @@
 node_modules
+ssl
 .env
+cert.pem
+csr.pem
+key.pem
