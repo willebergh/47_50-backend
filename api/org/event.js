@@ -162,16 +162,21 @@ router.post("/end", (req, res) => {
 				event_doc.winner = winnerPlayer;
 				event_doc.stats = {
 					ticketsSold: listOfAllTickets.length,
-					gorssIncome: listOfAllTickets.length * event_doc.ticketPrice,
-					pricePool: (listOfAllTickets.length * event_doc.ticketPrice) / 2,
-					uniqePlayers: new Set(listOfAllTickets.map((x) => x.player)).length,
+					gorssIncome:
+						listOfAllTickets.length * event_doc.ticketPrice,
+					pricePool:
+						(listOfAllTickets.length * event_doc.ticketPrice) / 2,
+					uniqePlayers: new Set(listOfAllTickets.map((x) => x.player))
+						.length,
 				};
 
 				listOfAllTickets.forEach((t) => {
 					Player.model.findById(ticket.player, (err, player_doc) => {
 						if (err) {
 							logger.error("API @ /org/event/end", err);
-							res.status(500).json({ message: "internal-server-error" });
+							res.status(500).json({
+								message: "internal-server-error",
+							});
 							return;
 						}
 
@@ -192,7 +197,9 @@ router.post("/end", (req, res) => {
 					(err, deletedDocs) => {
 						if (err) {
 							logger.error("API @ /org/event/end", err);
-							res.status(500).json({ message: "internal-server-error" });
+							res.status(500).json({
+								message: "internal-server-error",
+							});
 							return;
 						}
 					}
@@ -216,6 +223,20 @@ router.post("/end", (req, res) => {
 				});
 			});
 		});
+});
+
+router.post("/delete", (req, res) => {
+	const { event_id } = req.body;
+
+	Event.model.findByIdAndDelete(event_id, (err, doc) => {
+		if (err) {
+			logger.error("API @ /org/event/delete", err);
+			res.status(500).json({ message: "internal-server-error" });
+			return;
+		}
+
+		res.status(200).json({ message: "success" });
+	});
 });
 
 module.exports = router;
