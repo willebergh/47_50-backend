@@ -25,6 +25,11 @@ const schema = new mongoose.Schema({
 		ref: "Organisation",
 		required: true,
 	},
+	isReadyToStart: {
+		type: mongoose.Schema.Types.Boolean,
+		required: true,
+		default: true,
+	},
 	hasStarted: {
 		type: mongoose.Schema.Types.Boolean,
 		requierd: true,
