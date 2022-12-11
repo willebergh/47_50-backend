@@ -34,7 +34,7 @@ router.get("/info/:event_id", (req, res) => {
 
 	Event.model
 		.findById(event_id)
-		.populate("activeTickets")
+		.populate("activeTickets", "winner")
 		.exec((err, event_doc) => {
 			if (err) {
 				logger.error("API @ /org/event/info/:event_id", err);
@@ -134,7 +134,43 @@ router.post("/start", (req, res) => {
  * Apply new changes to an already existent event
  */
 
-router.post("/edit", (req, res) => {});
+router.post("/edit", (req, res) => {
+	const { event_id, displayName, startDate, endDate, ticketPrice } = req.body;
+
+	if (!event_id) {
+		res.status(500).json({ message: "missing event_id" });
+		return;
+	}
+
+	Event.model.findById(event_id, (err, doc) => {
+		if (err) {
+			logger.error("API @ /org/event/edit", err);
+			res.status(500).json({ message: "internal-server-error" });
+			return;
+		}
+
+		doc.displayName = displayName;
+
+		if (!doc.hasStarted) {
+			doc.startDate = startDate;
+			doc.ticketPrice = ticketPrice;
+		}
+
+		if (!doc.hasEnded) {
+			doc.endDate = endDate;
+		}
+
+		doc.save((err, doc) => {
+			if (err) {
+				logger.error("API @ /org/info/event/start", err);
+				res.status(500).json({ message: "internal-server-error" });
+				return;
+			}
+
+			res.status(200).json({ message: "success", event: doc });
+		});
+	});
+});
 
 /**
  * End an event. Draw winner and continue.
@@ -171,7 +207,7 @@ router.post("/end", (req, res) => {
 				};
 
 				listOfAllTickets.forEach((t) => {
-					Player.model.findById(ticket.player, (err, player_doc) => {
+					Player.model.findById(t.player, (err, player_doc) => {
 						if (err) {
 							logger.error("API @ /org/event/end", err);
 							res.status(500).json({
@@ -182,7 +218,7 @@ router.post("/end", (req, res) => {
 
 						const newPlayerTickets = [];
 						player_doc.tickets.forEach((playerTicket) => {
-							if (playerTicket._id !== ticket._id) {
+							if (playerTicket._id !== t._id) {
 								newPlayerTickets.push(playerTicket);
 							}
 						});

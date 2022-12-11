@@ -41,6 +41,8 @@ router.get("/event/:event_id", (req, res) => {
 				_id: doc._id,
 				hasStarted: doc.hasStarted,
 				hasEnded: doc.hasEnded,
+				isReadyToStart: doc.isReadyToStart,
+				pricePool: doc.stats.pricePool,
 			};
 
 			res.status(200).json({ message: "success", event: newEventDoc });
