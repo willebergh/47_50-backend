@@ -6,11 +6,11 @@ const router = express.Router();
 router.get("/", (req, res) => {
 	Organisation.model
 		.findById(req.org_id)
+		.select("+image")
 		.populate("event")
 		.exec((err, doc) => {
 			if (err) return console.error(err);
-			console.log(doc);
-			res.status(200).json(doc);
+			res.status(200).json({ message: "success", org: doc });
 		});
 });
 

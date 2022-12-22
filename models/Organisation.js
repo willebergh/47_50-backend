@@ -5,6 +5,14 @@ const schema = new mongoose.Schema({
 		type: "string",
 		required: true,
 	},
+	color: {
+		type: "string",
+		default: "#3ff668",
+	},
+	image: {
+		type: String,
+		select: false,
+	},
 	event: [{ type: mongoose.ObjectId, ref: "Event" }],
 	admins: [{ type: mongoose.ObjectId, ref: "User" }],
 });

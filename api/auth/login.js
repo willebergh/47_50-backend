@@ -13,7 +13,11 @@ router.post("/", (req, res) => {
 	User.model
 		.findOne({ email })
 		.select("+password")
-		.populate("organisations")
+		.populate({
+			path: "organisations",
+			model: "Organisation",
+			select: ["displayName", "_id"],
+		})
 		.exec((err, doc) => {
 			if (err) {
 				logger.error("API @ /auth/login", err);
@@ -32,7 +36,8 @@ router.post("/", (req, res) => {
 				}
 
 				// If the password don't match the hash it's the wrong password.
-				if (!isMatch) return res.status(401).json({ message: "unauthorized 2" });
+				if (!isMatch)
+					return res.status(401).json({ message: "unauthorized" });
 
 				const user = {
 					_id: doc._id,

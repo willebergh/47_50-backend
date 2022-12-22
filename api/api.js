@@ -32,6 +32,8 @@ router.param("org_id", (req, res, next) => {
 });
 router.use("/org/:org_id/info", useOrgMiddleware, require("./org/info"));
 router.use("/org/:org_id/event", useOrgMiddleware, require("./org/event"));
+router.use("/org/:org_id/update", useOrgMiddleware, require("./org/update"));
+router.use("/org/:org_id/image", require("./org/image"));
 
 /**
  * Creating routes for all functions under /callback

@@ -18,7 +18,11 @@ router.get("/event/:event_id", (req, res) => {
 
 	Event.model
 		.findById(event_id)
-		.populate("organisation")
+		.populate({
+			path: "organisation",
+			model: "Organisation",
+			select: ["displayName", "color", "image"],
+		})
 		.exec((err, doc) => {
 			if (err) {
 				logger.debug("API @ /player/event", err);
@@ -36,13 +40,16 @@ router.get("/event/:event_id", (req, res) => {
 				displayName: doc.displayName,
 				startDate: doc.startDate,
 				endDate: doc.endDate,
-				organisation: doc.organisation.displayName,
 				ticketPrice: doc.ticketPrice,
 				_id: doc._id,
 				hasStarted: doc.hasStarted,
 				hasEnded: doc.hasEnded,
 				isReadyToStart: doc.isReadyToStart,
 				pricePool: doc.stats.pricePool,
+
+				organisation: doc.organisation.displayName,
+				color: doc.organisation.color,
+				image: doc.organisation.image,
 			};
 
 			res.status(200).json({ message: "success", event: newEventDoc });

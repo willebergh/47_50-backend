@@ -264,14 +264,34 @@ router.post("/end", (req, res) => {
 router.post("/delete", (req, res) => {
 	const { event_id } = req.body;
 
-	Event.model.findByIdAndDelete(event_id, (err, doc) => {
+	Event.model.findById(event_id, (err, doc) => {
 		if (err) {
 			logger.error("API @ /org/event/delete", err);
 			res.status(500).json({ message: "internal-server-error" });
 			return;
 		}
 
-		res.status(200).json({ message: "success" });
+		if (doc.hasStarted || doc.hasEnded) {
+			logger.error(
+				"API @ /org/event/delete",
+				"Kan inte tabort event som har startat eller avslutats!"
+			);
+			res.status(400).json({
+				message:
+					"Kan inte tabort event som har startat eller avslutats!",
+			});
+			return;
+		}
+
+		Event.model.findByIdAndDelete(event_id, (err) => {
+			if (err) {
+				logger.error("API @ /org/event/delete", err);
+				res.status(500).json({ message: "internal-server-error" });
+				return;
+			}
+
+			res.status(200).json({ message: "success" });
+		});
 	});
 });
 
