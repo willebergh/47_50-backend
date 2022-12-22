@@ -6,6 +6,7 @@ const cookieSession = require("cookie-session");
 const api = require("./api/api");
 const https = require("https");
 const fs = require("fs");
+const autoRouter = require("@willebergh/auto-router");
 
 // Connect to database
 mongoose
@@ -27,7 +28,15 @@ app.use(
 		maxAge: 60 * 60 * 1000,
 	})
 );
-app.use("/api", api);
+// app.use("/api", api);
+
+app.use(
+	autoRouter({
+		routes: "./api", // Path to the directory with all routes
+		logging: "verbose", // How much to log to the console
+		baseRoute: "/api", // The base route of the autoRouter
+	})
+);
 
 const PORT = process.env.PORT | 5001;
 https

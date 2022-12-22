@@ -2,18 +2,19 @@ const express = require("express");
 const Organisation = require("../../models/Organisation");
 const logger = require("../../utils/logger");
 const multer = require("multer");
+const useOrgMiddleware = require("../../middleware/useOrg");
 
 const upload = multer({ storage: multer.memoryStorage() });
 
 const router = express.Router();
 
 router.post("/", upload.single("image"), (req, res) => {
-	const org_id = req.org_id;
-	const { displayName, color } = req.body;
+	const { org_id, displayName, color } = req.body;
+	console.log(req.body);
 
 	Organisation.model.findById(org_id, (err, doc) => {
 		if (err) {
-			logger.error("API @ /org/event/edit", err);
+			logger.error("API @ /org/edit", err);
 			res.status(500).json({ message: "internal-server-error" });
 			return;
 		}

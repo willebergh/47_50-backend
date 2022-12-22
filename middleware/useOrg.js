@@ -5,7 +5,13 @@ const User = require("../models/User");
 const router = express.Router();
 
 router.use(reqAuth, (req, res, next) => {
-	const targetOrgId = req.org_id;
+	const targetOrgId = req.body.org_id
+		? req.body.org_id
+		: req.org_id
+		? req.org_id
+		: null;
+
+	console.log(req.body);
 
 	User.model.findById(req.session.user_id, (err, user_doc) => {
 		if (err) return console.error(err);

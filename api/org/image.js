@@ -2,10 +2,18 @@ const express = require("express");
 const router = express.Router();
 
 const Organisation = require("../../models/Organisation");
+const useOrgMiddleware = require("../../middleware/useOrg");
 
-router.get("/", (req, res) => {
+router.param("org_id", (req, res, next, org_id) => {
+	req.org_id = org_id;
+	next();
+});
+
+router.get("/:org_id", useOrgMiddleware, (req, res) => {
+	const org_id = req.org_id;
+
 	Organisation.model
-		.findById(req.org_id)
+		.findById(org_id)
 		.select("+image")
 		.exec((err, doc) => {
 			if (err) {
