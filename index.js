@@ -3,7 +3,6 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const express = require("express");
 const cookieSession = require("cookie-session");
-const api = require("./api/api");
 const https = require("https");
 const fs = require("fs");
 const autoRouter = require("@willebergh/auto-router");

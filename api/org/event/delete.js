@@ -27,14 +27,14 @@ router.post("/", useOrgMiddleware, (req, res) => {
 			return;
 		}
 
-		Event.model.findByIdAndDelete(event_id, (err) => {
+		Event.model.findByIdAndDelete(event_id, (err, doc) => {
 			if (err) {
 				logger.error("API @ /org/event/delete", err);
 				res.status(500).json({ message: "internal-server-error" });
 				return;
 			}
 
-			res.status(200).json({ message: "success" });
+			res.status(200).json({ message: "success", event: doc });
 		});
 	});
 });

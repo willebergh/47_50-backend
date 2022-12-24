@@ -7,6 +7,11 @@ const schema = new mongoose.Schema({
 		uniqe: true,
 	},
 	tickets: [{ type: mongoose.ObjectId, ref: "Ticket" }],
+	eventWins: [{ type: mongoose.ObjectId, ref: "Event" }],
+	winnings: {
+		type: Number,
+		default: 0,
+	},
 });
 
 const model = new mongoose.model("Player", schema);

@@ -11,8 +11,6 @@ router.use(reqAuth, (req, res, next) => {
 		? req.org_id
 		: null;
 
-	console.log(req.body);
-
 	User.model.findById(req.session.user_id, (err, user_doc) => {
 		if (err) return console.error(err);
 

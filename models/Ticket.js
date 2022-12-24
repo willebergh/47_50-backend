@@ -18,6 +18,10 @@ const schema = new mongoose.Schema({
 	},
 });
 
+schema.pre("remove", function (callback) {
+	callback();
+});
+
 const model = new mongoose.model("Ticket", schema);
 
 class TicketClass {
