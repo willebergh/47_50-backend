@@ -1,48 +1,65 @@
+require("dotenv").config();
 const express = require("express");
 const bcrypt = require("bcrypt");
 const User = require("../../models/User");
+const RegisterKey = require("../../models/RegisterKey");
 const logger = require("../../utils/logger");
+const jwt = require("jsonwebtoken");
 
 const router = express.Router();
 
-router.post("/", (req, res) => {
-	const { email, password, displayName } = req.body;
+router.post("/verify-token", async (req, res) => {
+	const { token } = req.body;
 
-	// Try to find document based on provided email.
-	User.model.findOne({ email }, (err, doc) => {
-		if (err) {
-			logger.error("API @ /auth/register", err);
-			res.status(500).json({ message: "internal-server-error" });
-			return;
-		}
+	try {
+		const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+		const registerKeyId = decodedToken.registerKeyId;
+		const registerKeyDoc = await RegisterKey.model.findById(registerKeyId);
 
-		// If document exists the email is already in use.
-		if (doc) {
-			logger.debug("API @ /auth/register", "Email is already registerd!");
-			res.status(400).json({ message: "email already exists" });
-			return;
-		}
+		if (!registerKeyDoc) throw "Could not find registerKey document";
 
-		// Hash the password for db storage.
-		bcrypt.hash(password, 10, (err, hash) => {
-			if (err) {
-				logger.error("API @ /auth/register", err);
-				res.status(500).json({ message: "internal-server-error" });
-				return;
-			}
+		res.status(200).json({ message: "success", data: registerKeyDoc });
+	} catch (err) {
+		logger.error("API @ /api/auth/register/verify-token", err);
+		res.status(500).json({ message: "error", err });
+		return;
+	}
+});
 
-			// Create new document in database to register user / organisation
-			User.model.create({ email, password: hash, displayName }, (err, doc) => {
-				if (err) {
-					logger.error("API @ /auth/register", err);
-					res.status(500).json({ message: "internal-server-error" });
-					return;
-				}
+router.post("/", async (req, res) => {
+	const { token, displayName, password } = req.body;
 
-				res.status(200).json({ message: "success" });
-			});
+	try {
+		const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+		if (!decodedToken) throw "unauthorized: could not verify token";
+
+		const registerKeyDoc = await RegisterKey.model.findById(
+			decodedToken.registerKeyId
+		);
+		if (!registerKeyDoc) throw "unauthorized: no registerKeyDoc found";
+
+		const userDoc = await User.model.findOne({
+			email: registerKeyDoc.email,
 		});
-	});
+		if (userDoc) throw "email already exists";
+
+		const hash = bcrypt.hashSync(password, 10);
+
+		await User.model.create({
+			displayName,
+			password: hash,
+			email: registerKeyDoc.email,
+			organisations: registerKeyDoc.organisations,
+		});
+
+		await registerKeyDoc.remove();
+
+		res.status(200).json({ message: "success" });
+	} catch (err) {
+		logger.error("API @ /auth/register", err);
+		res.status(500).json({ message: err });
+		return;
+	}
 });
 
 module.exports = router;

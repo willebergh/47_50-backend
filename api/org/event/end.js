@@ -56,7 +56,7 @@ router.post("/", useOrgMiddleware, async (req, res) => {
 			await ticket.remove();
 		});
 
-		//event_doc.hasEnded = true;
+		event_doc.hasEnded = true;
 		event_doc.activeTickets = [];
 		await event_doc.save();
 

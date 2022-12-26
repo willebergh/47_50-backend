@@ -16,6 +16,10 @@ const schema = new mongoose.Schema({
 		select: false,
 	},
 	organisations: [{ type: mongoose.ObjectId, ref: "Organisation" }],
+	isAdmin: {
+		type: Boolean,
+		default: false,
+	},
 });
 
 const model = new mongoose.model("User", schema);

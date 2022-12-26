@@ -16,7 +16,7 @@ router.post("/", (req, res) => {
 		.populate({
 			path: "organisations",
 			model: "Organisation",
-			select: ["displayName", "_id"],
+			select: ["displayName", "_id", "isAdmin"],
 		})
 		.exec((err, doc) => {
 			console.log("1");
@@ -47,6 +47,7 @@ router.post("/", (req, res) => {
 					email: doc.email,
 					displayName: doc.displayName,
 					organisations: doc.organisations,
+					isAdmin: doc.isAdmin,
 				};
 
 				var token = jwt.sign({ user }, process.env.JWT_SECRET);
