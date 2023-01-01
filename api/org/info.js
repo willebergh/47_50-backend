@@ -1,7 +1,7 @@
 const express = require("express");
 const Organisation = require("../../models/Organisation");
 const useOrgMiddleware = require("../../middleware/useOrg");
-
+const calcOrgWallet = require("../../utils/calcOrgWallet");
 const router = express.Router();
 
 router.param("org_id", (req, res, next, org_id) => {
@@ -22,7 +22,18 @@ router.get("/:org_id", useOrgMiddleware, (req, res) => {
 				res.status(500).json({ message: "internal-server-error" });
 				return;
 			}
-			res.status(200).json({ message: "success", org: doc });
+
+			calcOrgWallet(doc, (err, updatedDoc) => {
+				if (err) {
+					res.status(500).json({ message: "error", error: err });
+					return;
+				}
+
+				res.status(200).json({
+					message: "success",
+					org: updatedDoc,
+				});
+			});
 		});
 });
 

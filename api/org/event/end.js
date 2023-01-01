@@ -33,7 +33,6 @@ router.post("/", useOrgMiddleware, async (req, res) => {
 			event_doc.stats = eventStats;
 			event_doc.winner = winner._id;
 
-			event_doc.organisation.wallet += eventStats.pricePool;
 			await event_doc.organisation.save();
 
 			await Player.model.updateOne(

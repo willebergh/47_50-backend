@@ -2,6 +2,8 @@ require("dotenv").config();
 
 const mongoose = require("mongoose");
 const express = require("express");
+const session = require("express-session");
+const cookieParser = require("cookie-parser");
 const cookieSession = require("cookie-session");
 const https = require("https");
 const fs = require("fs");
@@ -20,13 +22,16 @@ const app = express();
 
 app.set("trust proxy", 1);
 app.use(express.json());
+app.use(cookieParser());
 app.use(
-	cookieSession({
-		name: "session",
-		keys: ["asjdalskjdhalskjdhalsjkdhalksjhd"],
-		maxAge: 60 * 60 * 1000,
+	session({
+		secret: "asdklhaöljkfhaöldshahdöjahjskdhjklahsdjköhaösjdhahdkja",
+		resave: false,
+		saveUninitialized: true,
+		cookie: { secure: false },
 	})
 );
+
 // app.use("/api", api);
 
 app.use(

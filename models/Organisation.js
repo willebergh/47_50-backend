@@ -15,7 +15,16 @@ const schema = new mongoose.Schema({
 	},
 	event: [{ type: mongoose.ObjectId, ref: "Event" }],
 	admins: [{ type: mongoose.ObjectId, ref: "User" }],
-	wallet: { type: Number, default: 0 },
+	wallet: {
+		unPaidEventNotFinished: {
+			type: Number,
+			default: 0,
+		},
+		balance: {
+			type: Number,
+			default: 0,
+		},
+	},
 });
 
 const model = new mongoose.model("Organisation", schema);

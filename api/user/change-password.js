@@ -7,19 +7,22 @@ const bcrypt = require("bcrypt");
 const router = express.Router();
 
 router.post("/", reqAuthMiddleware, async (req, res) => {
-	const { newPassword } = req.body;
+	const { newPassword, oldPassword } = req.body;
 
 	try {
-		if (!newPassword) throw "missing new password in req.body";
+		if (!newPassword || !oldPassword)
+			throw "missing new password in req.body";
 
 		const user_id = req.session.user_id;
 		const userDoc = await User.model.findById(user_id).select("+password");
 
-		const isPasswordAlreadyInUse = bcrypt.compareSync(
-			newPassword,
+		const isOldPasswordCorrect = bcrypt.compareSync(
+			oldPassword,
 			userDoc.password
 		);
-		if (isPasswordAlreadyInUse) throw "password-already-in-use";
+		if (!isOldPasswordCorrect) throw "incorrect-password";
+
+		if (oldPassword === newPassword) throw "password-already-in-use";
 
 		const newPasswordHash = bcrypt.hashSync(newPassword, 10);
 		userDoc.password = newPasswordHash;

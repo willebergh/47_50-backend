@@ -54,6 +54,14 @@ const schema = new mongoose.Schema({
 	earlyEnding: {
 		type: mongoose.Schema.Types.Date,
 	},
+	isWinnerPaid: {
+		type: Boolean,
+		default: false,
+	},
+	isOrganisationPaid: {
+		type: Boolean,
+		default: false,
+	},
 });
 
 schema.post("remove", (doc) => {

@@ -1,8 +1,9 @@
 const express = require("express");
 const User = require("../../models/User");
 const router = express.Router();
+const reqAuthMiddleware = require("../../middleware/reqAuth");
 
-router.get("/", (req, res) => {
+router.get("/", reqAuthMiddleware, (req, res) => {
 	const user_id = req.session.user_id;
 
 	User.model
