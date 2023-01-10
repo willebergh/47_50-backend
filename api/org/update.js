@@ -8,7 +8,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 const router = express.Router();
 
-router.post("/", upload.single("image"), (req, res) => {
+router.post("/", useOrgMiddleware, upload.single("image"), (req, res) => {
 	const { org_id, displayName, color } = req.body;
 	console.log(req.body);
 

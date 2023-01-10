@@ -43,10 +43,22 @@ const schema = new mongoose.Schema({
 		ref: "Player",
 	},
 	stats: {
-		ticketsSold: "number",
-		grossIncome: "number",
-		pricePool: "number",
-		uniqePlayers: "number",
+		ticketsSold: {
+			type: Number,
+			default: 0,
+		},
+		grossIncome: {
+			type: Number,
+			default: 0,
+		},
+		pricePool: {
+			type: Number,
+			default: 0,
+		},
+		uniqePlayers: {
+			type: Number,
+			default: 0,
+		},
 	},
 	earlyStart: {
 		type: mongoose.Schema.Types.Date,

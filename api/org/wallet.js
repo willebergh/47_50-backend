@@ -19,6 +19,7 @@ router.get("/:org_id", useOrgMiddleware, async (req, res) => {
 			organisation: orgDoc._id,
 			hasStarted: true,
 			hasEnded: false,
+			stats: { $ne: null },
 		});
 
 		const unPaidEventNotFinished = onGoingEventDocList.reduce(
@@ -43,6 +44,9 @@ router.get("/:org_id", useOrgMiddleware, async (req, res) => {
 			message: "success",
 			balance,
 			unPaidEventNotFinished,
+			onGoingEvents: onGoingEventDocList,
+			completedEvents: completedEventDocList,
+			eventList: [...onGoingEventDocList, ...completedEventDocList],
 		});
 	} catch (err) {
 		console.error(err);

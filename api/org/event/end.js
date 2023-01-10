@@ -56,6 +56,7 @@ router.post("/", useOrgMiddleware, async (req, res) => {
 		});
 
 		event_doc.hasEnded = true;
+		event_doc.earlyEnding = new Date();
 		event_doc.activeTickets = [];
 		await event_doc.save();
 

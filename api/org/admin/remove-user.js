@@ -1,5 +1,6 @@
 const express = require("express");
 const User = require("../../../models/User");
+const Organisation = require("../../../models/Organisation");
 
 const reqOrgAdminMiddleware = require("../../../middleware/reqOrgAdmin");
 const logger = require("../../../utils/logger");
@@ -16,6 +17,13 @@ router.post("/", reqOrgAdminMiddleware, async (req, res) => {
 			{ _id: user_id },
 			{
 				$pull: { organisations: org_id },
+			}
+		);
+
+		await Organisation.model.updateOne(
+			{ _id: org_id },
+			{
+				$pull: { admins: user_id },
 			}
 		);
 
