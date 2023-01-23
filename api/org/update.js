@@ -8,9 +8,8 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 const router = express.Router();
 
-router.post("/", useOrgMiddleware, upload.single("image"), (req, res) => {
-	const { org_id, displayName, color } = req.body;
-	console.log(req.body);
+router.post("/", upload.single("image"), useOrgMiddleware, (req, res) => {
+	const { org_id, displayName, color, secondaryColor } = req.body;
 
 	Organisation.model.findById(org_id, (err, doc) => {
 		if (err) {
@@ -21,6 +20,7 @@ router.post("/", useOrgMiddleware, upload.single("image"), (req, res) => {
 
 		doc.displayName = displayName;
 		doc.color = color;
+		doc.secondaryColor = secondaryColor;
 
 		if (req.file) {
 			const toBase64 = (arr) =>

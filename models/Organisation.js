@@ -8,6 +8,12 @@ const schema = new mongoose.Schema({
 	color: {
 		type: "string",
 		default: "#3ff668",
+		required: true,
+	},
+	secondaryColor: {
+		type: "string",
+		default: "#3ff668",
+		required: true,
 	},
 	image: {
 		type: String,

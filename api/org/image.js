@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const logger = require("../../utils/logger");
 
 const Organisation = require("../../models/Organisation");
 const useOrgMiddleware = require("../../middleware/useOrg");
@@ -17,8 +18,14 @@ router.get("/:org_id", useOrgMiddleware, (req, res) => {
 		.select("+image")
 		.exec((err, doc) => {
 			if (err) {
-				logger.error("API @ /org/info", err);
+				logger.error("API @ /org/image", err);
 				res.status(500).json({ message: "internal-server-error" });
+				return;
+			}
+
+			if (!doc.image) {
+				logger.error("API @ /org/image", "image-not-found");
+				res.status(200).json({ message: "image-not-found" });
 				return;
 			}
 

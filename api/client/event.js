@@ -18,7 +18,7 @@ router.get("/:event_id", (req, res) => {
 		.populate({
 			path: "organisation",
 			model: "Organisation",
-			select: ["displayName", "color", "image"],
+			select: ["displayName", "color", "image", "secondaryColor"],
 		})
 		.exec((err, doc) => {
 			if (err) {
@@ -46,6 +46,7 @@ router.get("/:event_id", (req, res) => {
 
 				organisation: doc.organisation.displayName,
 				color: doc.organisation.color,
+				secondaryColor: doc.organisation.secondaryColor,
 				image: doc.organisation.image,
 			};
 

@@ -33,10 +33,12 @@ const schema = new mongoose.Schema({
 	hasStarted: {
 		type: mongoose.Schema.Types.Boolean,
 		requierd: true,
+		default: false,
 	},
 	hasEnded: {
 		type: mongoose.Schema.Types.Boolean,
 		requierd: true,
+		default: false,
 	},
 	winner: {
 		type: mongoose.ObjectId,
