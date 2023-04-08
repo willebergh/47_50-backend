@@ -96,7 +96,7 @@ router.post("/", async (req, res) => {
 			res.status(200).json({ message: "success" });
 		}
 	} catch (err) {
-		logger.debug("API @ /client/purchase-success", err);
+		logger.debug("API @ /client/swish-callback", err);
 		res.status(400).json({ message: err });
 	}
 });

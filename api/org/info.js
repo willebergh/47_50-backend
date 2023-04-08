@@ -3,6 +3,7 @@ const Organisation = require("../../models/Organisation");
 const useOrgMiddleware = require("../../middleware/useOrg");
 const calcOrgWallet = require("../../utils/calcOrgWallet");
 const router = express.Router();
+const logger = require("../../utils/logger");
 
 router.param("org_id", (req, res, next, org_id) => {
 	req.org_id = org_id;

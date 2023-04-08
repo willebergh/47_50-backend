@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const Ticket = require("./Ticket");
 
 const schema = new mongoose.Schema({
 	displayName: {
@@ -78,8 +77,20 @@ const schema = new mongoose.Schema({
 	},
 });
 
-schema.post("remove", (doc) => {
-	Ticket.remove({ _id: { $in: doc.activeTickets } });
+schema.post("find", async function (res) {
+	const query = this.getQuery();
+
+	const list = query._id?.$in.map((x) => x.toString());
+	if (list) {
+		list.forEach(async (_id) => {
+			await model.findOneAndUpdate(
+				{ _id },
+				{
+					$set: {},
+				}
+			);
+		});
+	}
 });
 
 const model = mongoose.model("Event", schema);
